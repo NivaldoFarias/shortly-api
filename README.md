@@ -14,8 +14,6 @@
     <a href="https://github.com/NivaldoFarias/shortly-api/tree/main/app.js"><strong>Browse TypeScript code»</strong></a>
 </div>
 
-<br />
-
 <div align="center">
 <h3 align="center">Built With</h3>
 
