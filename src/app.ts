@@ -1,8 +1,9 @@
 import express, { json, Request, Response } from 'express';
-import cors from 'cors';
-import chalk from 'chalk';
+import 'express-async-errors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+import chalk from 'chalk';
+import cors from 'cors';
 dotenv.config();
 
 import { SERVER } from './blueprints/chalk.js';
@@ -13,5 +14,5 @@ app.use(cors());
 app.use(json());
 app.use(helmet());
 
-app.get('/', (_req: Request, res: Response) => res.send('Online'));
+app.get('/', async (_req: Request, res: Response) => res.send('Online'));
 app.listen(PORT, () => console.log(chalk.bold.yellow(`${SERVER} Server started on port ${PORT}`)));
