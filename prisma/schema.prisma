@@ -15,21 +15,11 @@ model users {
   name       String
   email      String   @unique
   password   String
+  active     Boolean  @default(false)
   created_at DateTime @default(now())
 
   urls         urls[]
-  sessions     sessions[]
   deleted_urls deleted_urls[]
-}
-
-model sessions {
-  id         BigInt   @id @default(autoincrement())
-  user_id    Int      @unique
-  token      String   @unique @db.VarChar(255)
-  active     Boolean  @default(true)
-  created_at DateTime @default(now())
-
-  user users @relation(fields: [user_id], references: [id])
 }
 
 model urls {

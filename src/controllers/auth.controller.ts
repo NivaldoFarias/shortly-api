@@ -11,8 +11,14 @@ dotenv.config();
 export async function signUp(_req: Request, res: Response) {
   const { name, email, password } = res.locals;
   const cryptPass = bcrypt.hashSync(password, 10);
+  const createdAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
-  await client.query(`INSERT INTO accounts (name, email, password) VALUES ($1, $2, $3)`, [name, email, cryptPass]);
+  await client.query(`INSERT INTO users (name, email, password, created_at) VALUES ($1, $2, $3, $4)`, [
+    name,
+    email,
+    cryptPass,
+    createdAt,
+  ]);
   console.log(chalk.blue(`${DATABASE} ${email} registered successfully`));
   return res.sendStatus(201);
 }
@@ -22,14 +28,8 @@ export async function signIn(_req: Request, res: Response) {
     user: { id, email },
     token,
   } = res.locals;
-  const createdAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
-  await client.query(`INSERT INTO sessions (user_id, token, created_at, active) VALUES ($1, $2, $3, $4)`, [
-    id,
-    token,
-    createdAt,
-    true,
-  ]);
+  await client.query(`UPDATE users SET active = true WHERE id = $1`, [id]);
   console.log(chalk.blue(`${DATABASE} ${email} signed in successfully`));
   return res.status(200).send(token);
 }
