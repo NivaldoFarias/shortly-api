@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { stripHtml } from 'string-strip-html';
+import SqlString from 'sqlstring';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
@@ -53,7 +54,9 @@ export async function validateSignIn(req: Request, res: Response, next: NextFunc
 
 export async function emailIsUnique(_req: Request, res: Response, next: NextFunction) {
   const { email } = res.locals;
-  const result = await client.query(`SELECT * FROM users WHERE email = $1`, [email]);
+
+  const query = SqlString.format(`SELECT * FROM users WHERE email = ?`, [email]);
+  const result = await client.query(query);
   const user = result.rows[0] || null;
 
   if (user) {
@@ -71,7 +74,8 @@ export async function emailIsUnique(_req: Request, res: Response, next: NextFunc
 export async function findUser(req: Request, res: Response, next: NextFunction) {
   const email = stripHtml(req.body.email).result.trim();
 
-  const result = await client.query(`SELECT * FROM users WHERE email = $1`, [email]);
+  const query = SqlString.format(`SELECT * FROM users WHERE email = ?`, [email]);
+  const result = await client.query(query);
   const user = result.rows[0] || null;
 
   if (!user) {
