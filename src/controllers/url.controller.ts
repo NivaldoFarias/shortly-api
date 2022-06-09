@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { nanoid } from 'nanoid';
 import chalk from 'chalk';
 
-import { API } from '../blueprints/chalk.js';
+import { API } from './../blueprints/chalk.js';
 import client from './../server.js';
 
 async function shortenUrl(_req: Request, res: Response) {
@@ -44,4 +44,23 @@ async function getShortUrl(_req: Request, res: Response) {
   return res.redirect(200, url);
 }
 
-export { shortenUrl, getUrl, getShortUrl };
+async function deleteUrl(_req: Request, res: Response) {
+  const {
+    url: { url, views },
+    user: { id },
+  } = res.locals;
+  const deletedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+  await client.query(`DELETE FROM urls WHERE id = $1`, [id]);
+  await client.query(`INSERT INTO deleted_urls (url, total_views, deleted_at, user_id) VALUES ($1, $2, $3, $4)`, [
+    url,
+    views,
+    deletedAt,
+    id,
+  ]);
+
+  console.log(chalk.bold.blue(`${API} url deleted, deleted_urls table updated`));
+  return res.status(204).send();
+}
+
+export { shortenUrl, getUrl, getShortUrl, deleteUrl };

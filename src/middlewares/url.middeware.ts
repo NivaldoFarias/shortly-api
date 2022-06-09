@@ -77,4 +77,20 @@ async function findUrl(req: Request, res: Response, next: NextFunction) {
   return next();
 }
 
-export { requireToken, checkUrl, findUser, findUrl };
+async function urlBelongsToUser(_req: Request, res: Response, next: NextFunction) {
+  const { url, user } = res.locals;
+
+  if (url.user_id !== user.id) {
+    throw new AppError(
+      `Url id ${url.id} does not belong to user id ${user.id}`,
+      401,
+      `Unathorized`,
+      'Ensure that the url belongs to the user',
+    );
+  }
+  res.locals.url = url;
+  console.log(chalk.bold.magenta(`${MIDDLEWARE} Url belongs to user`));
+  return next();
+}
+
+export { requireToken, checkUrl, findUser, findUrl, urlBelongsToUser };
