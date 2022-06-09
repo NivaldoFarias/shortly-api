@@ -1,28 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import SqlString from 'sqlstring';
 import urlExist from 'url-exist';
-import jwt from 'jsonwebtoken';
 import chalk from 'chalk';
 
 import { AppError } from './../blueprints/AppError.js';
 import { MIDDLEWARE } from './../blueprints/chalk.js';
 import UrlSchema from './../models/url.model.js';
 import client from './../server.js';
-
-async function requireToken(req: Request, res: Response, next: NextFunction) {
-  const authorization = req.header('authorization') ?? '';
-  const token = authorization.replace('Bearer ', '').trim() ?? null;
-  const secretKey = process.env.JWT_SECRET ?? 'JWT_SECRET';
-
-  try {
-    const { sub } = jwt.verify(token, secretKey);
-    res.locals.subject = sub;
-  } catch (_error) {
-    throw new AppError(`Invalid token`, 401, `Invalid token`, 'Ensure to provide a valid token');
-  }
-  console.log(chalk.bold.magenta(`${MIDDLEWARE} Valid token`));
-  return next();
-}
 
 async function checkUrl(req: Request, res: Response, next: NextFunction) {
   const { url } = req.body;
@@ -96,4 +80,4 @@ async function urlBelongsToUser(_req: Request, res: Response, next: NextFunction
   return next();
 }
 
-export { requireToken, checkUrl, findUser, findUrl, urlBelongsToUser };
+export { checkUrl, findUser, findUrl, urlBelongsToUser };

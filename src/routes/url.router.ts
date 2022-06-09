@@ -1,7 +1,9 @@
 import { Router } from 'express';
 
-import { checkUrl, findUser, requireToken, findUrl, urlBelongsToUser } from './../middlewares/url.middeware.js';
+import { checkUrl, findUrl, urlBelongsToUser } from './../middlewares/url.middeware.js';
 import { shortenUrl, getUrl, getShortUrl, deleteUrl } from './../controllers/url.controller.js';
+import requireToken from './../services/requireToken.js';
+import findUser from './../services/findUser.js';
 
 const PATH = '/url';
 const urlRouter = Router();

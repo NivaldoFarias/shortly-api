@@ -61,7 +61,7 @@ async function deleteUrl(_req: Request, res: Response) {
   await client.query(insertQuery);
 
   console.log(chalk.bold.blue(`${API} url deleted, deleted_urls table updated`));
-  return res.status(204).send();
+  return res.sendStatus(204);
 }
 
 export { shortenUrl, getUrl, getShortUrl, deleteUrl };

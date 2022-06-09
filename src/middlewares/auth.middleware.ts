@@ -7,13 +7,13 @@ import dotenv from 'dotenv';
 import chalk from 'chalk';
 dotenv.config();
 
-import SignUpSchema from './../models/signup.model.js';
-import SignInSchema from './../models/signin.model.js';
 import { AppError } from './../blueprints/AppError.js';
 import { MIDDLEWARE } from './../blueprints/chalk.js';
+import SignUpSchema from './../models/signup.model.js';
+import SignInSchema from './../models/signin.model.js';
 import client from './../server.js';
 
-export async function validateSignUp(req: Request, res: Response, next: NextFunction) {
+async function validateSignUp(req: Request, res: Response, next: NextFunction) {
   const { password } = req.body;
   const name = stripHtml(req.body.name).result.trim();
   const email = stripHtml(req.body.email).result.trim();
@@ -36,7 +36,7 @@ export async function validateSignUp(req: Request, res: Response, next: NextFunc
   return next();
 }
 
-export async function validateSignIn(req: Request, res: Response, next: NextFunction) {
+async function validateSignIn(req: Request, res: Response, next: NextFunction) {
   const password = req.body.password;
   const email = stripHtml(req.body.email).result.trim();
 
@@ -52,7 +52,7 @@ export async function validateSignIn(req: Request, res: Response, next: NextFunc
   return next();
 }
 
-export async function emailIsUnique(_req: Request, res: Response, next: NextFunction) {
+async function emailIsUnique(_req: Request, res: Response, next: NextFunction) {
   const { email } = res.locals;
 
   const query = SqlString.format(`SELECT * FROM users WHERE email = ?`, [email]);
@@ -71,7 +71,7 @@ export async function emailIsUnique(_req: Request, res: Response, next: NextFunc
   return next();
 }
 
-export async function findUser(req: Request, res: Response, next: NextFunction) {
+async function findUser(req: Request, res: Response, next: NextFunction) {
   const email = stripHtml(req.body.email).result.trim();
 
   const query = SqlString.format(`SELECT * FROM users WHERE email = ?`, [email]);
@@ -91,7 +91,7 @@ export async function findUser(req: Request, res: Response, next: NextFunction) 
   return next();
 }
 
-export async function validatePassword(req: Request, res: Response, next: NextFunction) {
+async function validatePassword(req: Request, res: Response, next: NextFunction) {
   const password = req.body.password;
   const { user } = res.locals;
 
@@ -107,7 +107,7 @@ export async function validatePassword(req: Request, res: Response, next: NextFu
   return next();
 }
 
-export async function createToken(_req: Request, res: Response, next: NextFunction) {
+async function createToken(_req: Request, res: Response, next: NextFunction) {
   const {
     user: { id },
   } = res.locals;
@@ -120,3 +120,5 @@ export async function createToken(_req: Request, res: Response, next: NextFuncti
   console.log(chalk.magenta(`${MIDDLEWARE} Token created`));
   return next();
 }
+
+export { validateSignUp, validateSignIn, emailIsUnique, findUser, validatePassword, createToken };
