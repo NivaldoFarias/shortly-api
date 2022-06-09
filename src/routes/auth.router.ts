@@ -12,7 +12,7 @@ import {
 
 const authRouter = Router();
 
-authRouter.post('/api/auth/sign-up', validateSignUp, emailIsUnique, signUp);
-authRouter.post('/api/auth/sign-in', validateSignIn, findUser, validatePassword, createToken, signIn);
+authRouter.post('/sign-up', validateSignUp, emailIsUnique, signUp);
+authRouter.post('/sign-in', validateSignIn, findUser, validatePassword, createToken, signIn);
 
 export default authRouter;

@@ -24,9 +24,11 @@
     "helmet": "^5.1.0",
     "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
+    "nanoid": "^4.0.0",
     "pg": "^8.7.3",
     "sqlstring": "^2.3.3",
-    "string-strip-html": "^9.1.12"
+    "string-strip-html": "^9.1.12",
+    "url-exist": "^3.0.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",

@@ -8,7 +8,7 @@ import { DATABASE } from './../blueprints/chalk.js';
 
 dotenv.config();
 
-export async function signUp(_req: Request, res: Response) {
+async function signUp(_req: Request, res: Response) {
   const { name, email, password } = res.locals;
   const cryptPass = bcrypt.hashSync(password, 10);
   const createdAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -23,7 +23,7 @@ export async function signUp(_req: Request, res: Response) {
   return res.sendStatus(201);
 }
 
-export async function signIn(_req: Request, res: Response) {
+async function signIn(_req: Request, res: Response) {
   const {
     user: { id, email },
     token,
@@ -31,5 +31,7 @@ export async function signIn(_req: Request, res: Response) {
 
   await client.query(`UPDATE users SET active = true WHERE id = $1`, [id]);
   console.log(chalk.blue(`${DATABASE} ${email} signed in successfully`));
-  return res.status(200).send(token);
+  return res.status(200).send({ token });
 }
+
+export { signUp, signIn };
