@@ -8,35 +8,48 @@ import client from './../server.js';
 async function getUser(_req: Request, res: Response) {
   const { user } = res.locals;
 
-  const query = SqlString.format(
+  const userQuery = SqlString.format(
     `SELECT 
-      SUM(urls.views) AS "totalVisitCount",
-      urls.id AS "urlId",
-      urls.short_url AS "shortUrl",
-      urls.url AS "url",
-      urls.views AS "visitCount"
-    FROM urls 
+        urls.user_id AS "id",
+        users.name AS "name",
+        COALESCE(SUM(urls.views), 0) AS "visitCount"
+    FROM urls
     JOIN users ON urls.user_id = users.id
-    WHERE users.id = ?
-    GROUP BY users.id, urls.id`,
+    WHERE urls.user_id = ?
+    GROUP BY user_id, users.name
+    ORDER BY "visitCount" DESC`,
     [user.id],
   );
-  const result = await client.query(query);
-  const output = processResult(result, user);
+  const userResult = await client.query(userQuery);
+
+  const urlsQuery = SqlString.format(
+    `SELECT 
+        id,
+        short_url AS "shortUrl",
+        url,
+        views AS "visitCount"
+    FROM urls
+    WHERE user_id = ?
+    ORDER BY id ASC`,
+    [user.id],
+  );
+  const urlsResult = await client.query(urlsQuery);
+
+  const output = processResults(userResult.rows[0], urlsResult.rows);
 
   console.log(chalk.bold.blue(`${API} User info sent`));
   return res.status(200).send(output);
 
-  function processResult(result: any, user: any) {
+  function processResults(user: any, urls: any) {
     const output = {
       id: user.id,
       name: user.name,
-      visitCount: result[0]?.totalVisitCount ?? 0,
-      shortenedUrls: result.rows.map((row: any) => ({
-        id: row.urlId,
-        shortUrl: row.shortUrl,
-        url: row.url,
-        visitCount: row.visitCount,
+      visitCount: user.visitCount,
+      shortenedUrls: urls.map((url: any) => ({
+        id: url.id,
+        shortUrl: url.shortUrl,
+        url: url.url,
+        visitCount: url.visitCount,
       })),
     };
     return { ...output };
