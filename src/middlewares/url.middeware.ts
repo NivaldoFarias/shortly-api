@@ -54,4 +54,27 @@ async function findUser(_req: Request, res: Response, next: NextFunction) {
   return next();
 }
 
-export { requireToken, checkUrl, findUser };
+async function findUrl(req: Request, res: Response, next: NextFunction) {
+  const { id, shortUrl } = req.params;
+  let result = null;
+  if (id) {
+    result = await client.query(`SELECT urls.id, urls.short_url AS "shortUrl", url  FROM urls WHERE id = $1`, [id]);
+  } else {
+    result = await client.query(`SELECT * FROM urls WHERE short_url = $1`, [shortUrl]);
+  }
+  const url = result.rows[0] ?? null;
+
+  if (!url) {
+    throw new AppError(
+      `Url not found`,
+      404,
+      `Url not found`,
+      'Ensure to provide a valid parameter that corresponds to a registered url',
+    );
+  }
+  res.locals.url = url;
+  console.log(chalk.bold.magenta(`${MIDDLEWARE} Url found`));
+  return next();
+}
+
+export { requireToken, checkUrl, findUser, findUrl };
