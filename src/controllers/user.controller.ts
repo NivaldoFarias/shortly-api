@@ -6,36 +6,32 @@ import { API } from './../blueprints/chalk.js';
 import client from './../server.js';
 
 async function getUser(_req: Request, res: Response) {
-  const {
-    user: { id, name },
-  } = res.locals;
+  const { user } = res.locals;
 
   const query = SqlString.format(
     `SELECT 
-      users.id AS "userId",
-      users.name AS "userName",
       SUM(urls.views) AS "totalVisitCount",
       urls.id AS "urlId",
       urls.short_url AS "shortUrl",
       urls.url AS "url",
       urls.views AS "visitCount"
     FROM urls 
-    GROUP BY users.id, urls.id
-    LEFT JOIN users ON urls.user_id = users.id
-    WHERE users.id = ?`,
-    [id],
+    JOIN users ON urls.user_id = users.id
+    WHERE users.id = ?
+    GROUP BY users.id, urls.id`,
+    [user.id],
   );
   const result = await client.query(query);
-  const output = processResult(result);
+  const output = processResult(result, user);
 
   console.log(chalk.bold.blue(`${API} User info sent`));
   return res.status(200).send(output);
 
-  function processResult(result: any) {
+  function processResult(result: any, user: any) {
     const output = {
-      id: result[0].userId,
-      name: result[0].userName,
-      visitCount: result[0].totalVisitCount,
+      id: user.id,
+      name: user.name,
+      visitCount: result[0]?.totalVisitCount ?? 0,
       shortenedUrls: result.rows.map((row: any) => ({
         id: row.urlId,
         shortUrl: row.shortUrl,
@@ -63,7 +59,7 @@ async function getRanking(_req: Request, res: Response) {
   const result = await client.query(query);
 
   console.log(chalk.bold.blue(`${API} Users ranking sent`));
-  return res.status(200).send(result);
+  return res.status(200).send(result.rows);
 }
 
 export { getUser, getRanking };

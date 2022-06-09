@@ -5,7 +5,7 @@ import { shortenUrl, getUrl, getShortUrl, deleteUrl } from './../controllers/url
 import requireToken from './../services/requireToken.js';
 import findUser from './../services/findUser.js';
 
-const PATH = '/url';
+const PATH = '/urls';
 const urlRouter = Router();
 
 urlRouter.get(`${PATH}/:id`, findUrl, getUrl);

@@ -30,16 +30,15 @@ model urls {
   views      BigInt   @default(0)
   created_at DateTime @default(now())
 
-  deleted_urls deleted_urls[]
-  user         users          @relation(fields: [user_id], references: [id])
+  user users @relation(fields: [user_id], references: [id])
 }
 
 model deleted_urls {
-  id         Int      @id @default(autoincrement())
-  user_id    Int
-  url_id     Int      @unique
-  deleted_at DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  user_id     Int
+  url         String
+  total_views BigInt   @default(0)
+  deleted_at  DateTime @default(now())
 
-  url  urls  @relation(fields: [url_id], references: [id])
   user users @relation(fields: [user_id], references: [id])
 }

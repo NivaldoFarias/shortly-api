@@ -44,7 +44,7 @@ async function findUrl(req: Request, res: Response, next: NextFunction) {
   const { id, shortUrl } = req.params;
   let query: any = null;
   if (id) {
-    query = SqlString.format(`SELECT urls.id, urls.short_url AS "shortUrl", url  FROM urls WHERE id = ?`, [id]);
+    query = SqlString.format(`SELECT *  FROM urls WHERE id = ?`, [id]);
   } else if (shortUrl) {
     query = SqlString.format(`SELECT *  FROM urls WHERE short_url = ?`, [shortUrl]);
   }

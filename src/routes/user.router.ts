@@ -7,6 +7,6 @@ import findUser from './../services/findUser.js';
 const userRouter = Router();
 
 userRouter.get(`/users/:id`, requireToken, findUser, getUser);
-userRouter.get(`/ranking`, findUser, getRanking);
+userRouter.get(`/ranking`, getRanking);
 
 export default userRouter;

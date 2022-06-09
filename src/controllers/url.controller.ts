@@ -26,10 +26,12 @@ async function shortenUrl(_req: Request, res: Response) {
 }
 
 async function getUrl(_req: Request, res: Response) {
-  const { url } = res.locals;
+  const {
+    url: { id, short_url: shortUrl, url },
+  } = res.locals;
 
   console.log(chalk.bold.blue(`${API} Url sent`));
-  return res.status(200).send({ url });
+  return res.status(200).send({ id, shortUrl, url });
 }
 
 async function getShortUrl(_req: Request, res: Response) {
@@ -46,8 +48,8 @@ async function getShortUrl(_req: Request, res: Response) {
 
 async function deleteUrl(_req: Request, res: Response) {
   const {
-    url: { url, views },
-    user: { id },
+    url: { id, url, views },
+    user,
   } = res.locals;
   const deletedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
@@ -56,7 +58,7 @@ async function deleteUrl(_req: Request, res: Response) {
 
   const insertQuery = SqlString.format(
     `INSERT INTO deleted_urls (url, total_views, deleted_at, user_id) VALUES (?, ?, ?, ?)`,
-    [url, views, deletedAt, id],
+    [url, views, deletedAt, user.id],
   );
   await client.query(insertQuery);
 
