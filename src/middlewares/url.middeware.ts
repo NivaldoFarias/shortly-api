@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import SqlString from 'sqlstring';
 import urlExist from 'url-exist';
 import jwt from 'jsonwebtoken';
 import chalk from 'chalk';
@@ -38,7 +39,8 @@ async function checkUrl(req: Request, res: Response, next: NextFunction) {
 
 async function findUser(_req: Request, res: Response, next: NextFunction) {
   const { subject } = res.locals;
-  const result = await client.query(`SELECT * FROM users WHERE id = $1`, [subject]);
+  const query = SqlString.format(`SELECT * FROM users WHERE id = ?`, [subject]);
+  const result = await client.query(query);
   const user = result.rows[0] ?? null;
 
   if (!user) {
@@ -56,12 +58,13 @@ async function findUser(_req: Request, res: Response, next: NextFunction) {
 
 async function findUrl(req: Request, res: Response, next: NextFunction) {
   const { id, shortUrl } = req.params;
-  let result = null;
+  let query: any = null;
   if (id) {
-    result = await client.query(`SELECT urls.id, urls.short_url AS "shortUrl", url  FROM urls WHERE id = $1`, [id]);
-  } else {
-    result = await client.query(`SELECT * FROM urls WHERE short_url = $1`, [shortUrl]);
+    query = SqlString.format(`SELECT urls.id, urls.short_url AS "shortUrl", url  FROM urls WHERE id = ?`, [id]);
+  } else if (shortUrl) {
+    query = SqlString.format(`SELECT *  FROM urls WHERE short_url = ?`, [shortUrl]);
   }
+  const result = id || shortUrl ? await client.query(query) : null;
   const url = result.rows[0] ?? null;
 
   if (!url) {

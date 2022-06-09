@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import SqlString from 'sqlstring';
 import { nanoid } from 'nanoid';
 import chalk from 'chalk';
 
@@ -14,13 +15,11 @@ async function shortenUrl(_req: Request, res: Response) {
   const createdAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
   const views = 0;
 
-  await client.query(`INSERT INTO urls (short_url, url, views, created_at, user_id) VALUES ($1, $2, $3, $4, $5)`, [
-    shortUrl,
-    url,
-    views,
-    createdAt,
-    id,
-  ]);
+  const query = SqlString.format(
+    `INSERT INTO urls (short_url, url, views, created_at, user_id) VALUES (?, ?, ?, ?, ?)`,
+    [shortUrl, url, views, createdAt, id],
+  );
+  await client.query(query);
 
   console.log(chalk.bold.blue(`${API} Url instanciated`));
   return res.status(201).send({ shortUrl });
@@ -38,7 +37,8 @@ async function getShortUrl(_req: Request, res: Response) {
     url: { id, url },
   } = res.locals;
 
-  await client.query(`UPDATE urls SET views = views + 1 WHERE id = $1`, [id]);
+  const query = SqlString.format(`UPDATE urls SET views = views + 1 WHERE id = ?`, [id]);
+  await client.query(query);
 
   console.log(chalk.bold.blue(`${API} user redirected, url view count increased`));
   return res.redirect(200, url);
@@ -51,13 +51,14 @@ async function deleteUrl(_req: Request, res: Response) {
   } = res.locals;
   const deletedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
-  await client.query(`DELETE FROM urls WHERE id = $1`, [id]);
-  await client.query(`INSERT INTO deleted_urls (url, total_views, deleted_at, user_id) VALUES ($1, $2, $3, $4)`, [
-    url,
-    views,
-    deletedAt,
-    id,
-  ]);
+  const deleteQuery = SqlString.format(`DELETE FROM urls WHERE id = ?`, [id]);
+  await client.query(deleteQuery);
+
+  const insertQuery = SqlString.format(
+    `INSERT INTO deleted_urls (url, total_views, deleted_at, user_id) VALUES (?, ?, ?, ?)`,
+    [url, views, deletedAt, id],
+  );
+  await client.query(insertQuery);
 
   console.log(chalk.bold.blue(`${API} url deleted, deleted_urls table updated`));
   return res.status(204).send();
