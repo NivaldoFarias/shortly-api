@@ -4,9 +4,19 @@ import chalk from 'chalk';
 
 import { API } from './../blueprints/chalk.js';
 import client from './../server.js';
+import { AppError } from '../blueprints/AppError.js';
 
-async function getUser(_req: Request, res: Response) {
+async function getUser(req: Request, res: Response) {
   const { user } = res.locals;
+  const { id } = req.params;
+  if (user.id !== Number(id)) {
+    throw new AppError(
+      `User id mismatch`,
+      401,
+      `User id mismatch`,
+      `Ensure to provide a valid user id that matches the logged-in user's id`,
+    );
+  }
 
   const userQuery = SqlString.format(
     `SELECT 
@@ -31,7 +41,7 @@ async function getUser(_req: Request, res: Response) {
     FROM urls
     WHERE user_id = ?
     ORDER BY id ASC`,
-    [user.id],
+    [id],
   );
   const urlsResult = await client.query(urlsQuery);
 
