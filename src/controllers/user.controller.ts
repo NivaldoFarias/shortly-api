@@ -62,7 +62,7 @@ async function getRanking(_req: Request, res: Response) {
       users.id,
       users.name,
       COUNT(urls.id) AS "linksCount",
-      SUM(urls.views) AS "visitCount"
+      COALESCE(SUM(urls.views), 0) AS "visitCount"
     FROM users 
     LEFT JOIN urls ON urls.user_id = users.id
     GROUP BY users.id
