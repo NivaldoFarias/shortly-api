@@ -2,9 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import SqlString from 'sqlstring';
 import chalk from 'chalk';
 
-import { AppError } from '../blueprints/AppError';
-import { MIDDLEWARE } from '../blueprints/chalk';
-import client from '../server';
+import { AppError } from './../blueprints/AppError.js';
+import { MIDDLEWARE } from './../blueprints/chalk.js';
+import client from './../server.js';
 
 async function findUser(req: Request, res: Response, next: NextFunction) {
   const { id } = req.params;
