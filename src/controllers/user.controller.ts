@@ -7,17 +7,16 @@ import client from './../server.js';
 
 async function getUser(_req: Request, res: Response) {
   const id = res.locals.id;
-  console.log(id, typeof id);
 
   const userQuery = SqlString.format(
     `SELECT 
-        urls.user_id AS "id",
+        users.id AS "id",
         users.name AS "name",
         COALESCE(SUM(urls.views), 0) AS "visitCount"
-    FROM urls
-    JOIN users ON urls.user_id = users.id
-    WHERE urls.user_id = ?
-    GROUP BY user_id, users.name
+    FROM users
+    LEFT JOIN urls ON urls.user_id = users.id
+    WHERE users.id = ?
+    GROUP BY users.id
     ORDER BY "visitCount" DESC`,
     [id],
   );
@@ -41,17 +40,20 @@ async function getUser(_req: Request, res: Response) {
   console.log(chalk.bold.blue(`${API} User info sent`));
   return res.status(200).send(output);
 
-  function processResults(user: any, urls: any) {
+  function processResults(user: any = {}, urls: any = []) {
     const output = {
       id: user.id,
       name: user.name,
       visitCount: user.visitCount,
-      shortenedUrls: urls.map((url: any) => ({
-        id: url.id,
-        shortUrl: url.shortUrl,
-        url: url.url,
-        visitCount: url.visitCount,
-      })),
+      shortenedUrls:
+        urls.length > 0
+          ? urls.map((url: any) => ({
+              id: url.id,
+              shortUrl: url.shortUrl,
+              url: url.url,
+              visitCount: url.visitCount,
+            }))
+          : urls,
     };
     return { ...output };
   }

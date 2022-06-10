@@ -67,6 +67,7 @@ async function emailIsUnique(_req: Request, res: Response, next: NextFunction) {
       'Ensure to provide an email that is not already registered',
     );
   }
+
   console.log(chalk.magenta(`${MIDDLEWARE} Email is unique`));
   return next();
 }
@@ -86,6 +87,7 @@ async function findUser(req: Request, res: Response, next: NextFunction) {
       'Ensure to provide a valid email corresponding to a registered user',
     );
   }
+
   res.locals.user = user;
   console.log(chalk.magenta(`${MIDDLEWARE} User found`));
   return next();
@@ -103,6 +105,7 @@ async function validatePassword(req: Request, res: Response, next: NextFunction)
       'Ensure to provide a valid password corresponding to the provided email',
     );
   }
+
   console.log(chalk.magenta(`${MIDDLEWARE} Valid password`));
   return next();
 }

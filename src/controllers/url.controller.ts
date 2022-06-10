@@ -34,7 +34,7 @@ async function getUrl(_req: Request, res: Response) {
   return res.status(200).send({ id, shortUrl, url });
 }
 
-async function getShortUrl(_req: Request, res: Response) {
+async function openUrl(_req: Request, res: Response) {
   const {
     url: { id, url },
   } = res.locals;
@@ -66,4 +66,4 @@ async function deleteUrl(_req: Request, res: Response) {
   return res.sendStatus(204);
 }
 
-export { shortenUrl, getUrl, getShortUrl, deleteUrl };
+export { shortenUrl, getUrl, openUrl, deleteUrl };

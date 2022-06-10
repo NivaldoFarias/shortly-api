@@ -16,6 +16,7 @@ async function checkUrl(req: Request, res: Response, next: NextFunction) {
   if (!urlExists || validate.error) {
     throw new AppError(`Invalid url`, 422, `Invalid url`, 'Ensure to provide a valid url');
   }
+
   console.log(chalk.bold.magenta(`${MIDDLEWARE} Url exists`));
   res.locals.url = url;
   return next();
@@ -35,6 +36,7 @@ async function findUser(_req: Request, res: Response, next: NextFunction) {
       'Ensure to provide a valid user id corresponding to a registered user',
     );
   }
+
   res.locals.user = user;
   console.log(chalk.bold.magenta(`${MIDDLEWARE} User found`));
   return next();
@@ -59,6 +61,7 @@ async function findUrl(req: Request, res: Response, next: NextFunction) {
       'Ensure to provide a valid parameter that corresponds to a registered url',
     );
   }
+
   res.locals.url = url;
   console.log(chalk.bold.magenta(`${MIDDLEWARE} Url found`));
   return next();
@@ -75,6 +78,7 @@ async function urlBelongsToUser(_req: Request, res: Response, next: NextFunction
       'Ensure that the url belongs to the user',
     );
   }
+
   res.locals.url = url;
   console.log(chalk.bold.magenta(`${MIDDLEWARE} Url belongs to user`));
   return next();
