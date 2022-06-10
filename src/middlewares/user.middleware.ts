@@ -7,7 +7,7 @@ import { MIDDLEWARE } from './../blueprints/chalk.js';
 import client from './../server.js';
 
 async function findUser(req: Request, res: Response, next: NextFunction) {
-  const { id } = req.params;
+  const id = Number(req.params.id);
   const query = SqlString.format(`SELECT * FROM users WHERE id = ?`, [id]);
   const result = await client.query(query);
   const user = result.rows[0] ?? null;

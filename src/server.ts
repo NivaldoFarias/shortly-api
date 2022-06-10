@@ -8,6 +8,7 @@ import { API, ERROR } from './blueprints/chalk.js';
 const { Client } = pg;
 const connectionString = process.env.DATABASE_URL ?? '';
 const databaseConfig: ClientConfig = { connectionString };
+
 if (process.env.MODE === 'PROD') {
   databaseConfig.ssl = {
     rejectUnauthorized: false,

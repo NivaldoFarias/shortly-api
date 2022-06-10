@@ -6,7 +6,8 @@ import { API } from './../blueprints/chalk.js';
 import client from './../server.js';
 
 async function getUser(_req: Request, res: Response) {
-  const { id } = res.locals;
+  const id = res.locals.id;
+  console.log(id, typeof id);
 
   const userQuery = SqlString.format(
     `SELECT 

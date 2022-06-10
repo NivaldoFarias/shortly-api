@@ -8,5 +8,8 @@ const userRouter = Router();
 
 userRouter.get(`/users/:id`, requireToken, findUser, getUser);
 userRouter.get(`/ranking`, getRanking);
+userRouter.get('/test', (_req, res) => {
+  return res.json({ message: 'test' });
+});
 
 export default userRouter;
