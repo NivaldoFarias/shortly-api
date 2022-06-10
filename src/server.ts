@@ -1,4 +1,4 @@
-import pg from 'pg';
+import pg, { ClientConfig } from 'pg';
 import chalk from 'chalk';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -6,12 +6,14 @@ dotenv.config();
 import { API, ERROR } from './blueprints/chalk.js';
 
 const { Client } = pg;
-const databaseConfig = {
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
+const connectionString = process.env.DATABASE_URL ?? '';
+const databaseConfig: ClientConfig = { connectionString };
+if (process.env.MODE === 'PROD') {
+  databaseConfig.ssl = {
     rejectUnauthorized: false,
-  },
-};
+  };
+}
+
 const client = new Client(databaseConfig);
 
 try {
