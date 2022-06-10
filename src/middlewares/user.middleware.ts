@@ -20,7 +20,7 @@ async function findUser(req: Request, res: Response, next: NextFunction) {
       'Ensure to provide a valid user id corresponding to a registered user',
     );
   }
-  res.locals.user = user;
+  res.locals.id = id;
   console.log(chalk.bold.magenta(`${MIDDLEWARE} User found`));
   return next();
 }
