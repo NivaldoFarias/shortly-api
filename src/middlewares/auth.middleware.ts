@@ -112,8 +112,9 @@ async function createToken(_req: Request, res: Response, next: NextFunction) {
     user: { id },
   } = res.locals;
   const data = {};
-  const secretKey = process.env.JWT_SECRET || 'JWT_SECRET';
-  const config = { expiresIn: process.env.JWT_EXPIRESIN, subject: id.toString() };
+  const secretKey = process.env.JWT_SECRET ?? 'JWT_SECRET';
+  const expiresIn = process.env.JWT_EXPIRES_IN ?? '1d';
+  const config = { expiresIn, subject: id.toString() };
   const token = jwt.sign(data, secretKey, config);
 
   res.locals.token = token;
