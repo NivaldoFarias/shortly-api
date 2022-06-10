@@ -1,40 +1,14 @@
 import { Request, Response } from 'express';
-import SqlString from 'sqlstring';
 import chalk from 'chalk';
 
 import { API } from './../blueprints/chalk.js';
-import client from './../server.js';
+import * as userRepository from './../repositories/user.repository.js';
 
 async function getUser(_req: Request, res: Response) {
   const id = res.locals.id;
 
-  const userQuery = SqlString.format(
-    `SELECT 
-        users.id AS "id",
-        users.name AS "name",
-        COALESCE(SUM(urls.views), 0) AS "visitCount"
-    FROM users
-    LEFT JOIN urls ON urls.user_id = users.id
-    WHERE users.id = ?
-    GROUP BY users.id
-    ORDER BY "visitCount" DESC`,
-    [id],
-  );
-  const userResult = await client.query(userQuery);
-
-  const urlsQuery = SqlString.format(
-    `SELECT 
-        id,
-        short_url AS "shortUrl",
-        url,
-        views AS "visitCount"
-    FROM urls
-    WHERE user_id = ?
-    ORDER BY id ASC`,
-    [id],
-  );
-  const urlsResult = await client.query(urlsQuery);
-
+  const userResult = await userRepository.userQuery(id);
+  const urlsResult = await userRepository.urlsQuery(id);
   const output = processResults(userResult.rows[0], urlsResult.rows);
 
   console.log(chalk.bold.blue(`${API} User info sent`));
@@ -60,19 +34,7 @@ async function getUser(_req: Request, res: Response) {
 }
 
 async function getRanking(_req: Request, res: Response) {
-  const query = SqlString.format(
-    `SELECT 
-      users.id,
-      users.name,
-      COUNT(urls.id) AS "linksCount",
-      COALESCE(SUM(urls.views), 0) AS "visitCount"
-    FROM users 
-    LEFT JOIN urls ON urls.user_id = users.id
-    GROUP BY users.id
-    ORDER BY "visitCount" DESC
-    LIMIT 10`,
-  );
-  const result = await client.query(query);
+  const result = await userRepository.rankingQuery();
 
   console.log(chalk.bold.blue(`${API} Users ranking sent`));
   return res.status(200).send(result.rows);
